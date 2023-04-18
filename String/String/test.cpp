@@ -200,7 +200,7 @@
 //        vector<int> next = getNext(needle);
 //        int j = 0;
 //        for (int i = 0; i < haystack.size(); i++) {
-//            while (j > 0 && haystack[i] != needle[j]) { //当前字符不匹配,j向前回退（重新寻找匹配位置）
+//            while (j > 0 && needle[j] != haystack[i]) { //当前字符不匹配,j向前回退（重新寻找匹配位置）
 //                j = next[j - 1];
 //            }
 //            if (needle[j] == haystack[i]) { //当前字符匹配,j后移
@@ -233,4 +233,66 @@
 //};
 ////时间复杂度: O(n+m)
 ////next前缀表: 用来回退的,它记录了模式串与文本串不匹配的时候,模式串应该从哪里开始重新匹配
+////next前缀表: 统计了以各个位置为终点的字符串的最长相同前后缀的长度
 
+
+////重复的子字符串
+//
+///* 拼接+查找 */
+//class Solution {
+//public:
+//    bool repeatedSubstringPattern(string s) {
+//        string t = s + s;
+//        t.erase(t.begin());
+//        t.erase(t.end() - 1);
+//        if (t.find(s) != string::npos)
+//            return true;
+//        return false;
+//    }
+//};
+//
+///* KMP算法: 最小重复子串长度 = 字符串长度 - 最长相同前后缀长度 */
+//class Solution {
+//public:
+//    bool repeatedSubstringPattern(string s) {
+//        int len = s.size();
+//        vector<int> next = getNext(s);
+//        if (next[len - 1] != 0 && len % (len - next[len - 1]) == 0) {
+//            return true;
+//        }
+//        return false;
+//    }
+//    vector<int> getNext(const string& s) {
+//        vector<int> next(s.size());
+//        next[0] = 0;
+//        int j = 0;
+//        for (int i = 1; i < s.size(); i++) {
+//            while (j > 0 && s[j] != s[i]) {
+//                j = next[j - 1];
+//            }
+//            if (s[j] == s[i]) {
+//                j++;
+//            }
+//            next[i] = j;
+//        }
+//        return next;
+//    }
+//};
+////next[n - 1]: 最长相同前后缀的长度
+////len - next[n - 1]: 最小重复子串的长度
+///*
+//         字符串s: a b a b a b a b
+//     字符串s下标: 0 1 2 3 4 5 6 7
+//最长相等前缀t下标: 0 1 2 3 4 5
+//最长相等后缀k下标:     0 1 2 3 4 5
+//
+//  t[0]=k[0],t[1]=k[1]
+//  t[0]=s[0],t[1]=s[1]
+//  k[0]=s[2],k[1]=s[3]
+//->s[0]=s[2],s[1]=s[3]
+//以此类推
+//->s[2]=s[4],s[3]=s[5]
+//->s[4]=s[6],s[5]=s[7]
+//所以字符串长度减去最长相同前后缀的长度即为最小重复子串的长度
+//如果得到的不是最小重复子串，那么使用的也一定不是最长相同前后缀的长度，此时前后缀长度还可以更长
+//*/
